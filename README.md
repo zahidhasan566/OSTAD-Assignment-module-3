@@ -34,3 +34,16 @@ npm start
    pm2 save
    ```
 
+### About The Applications
+1. **Route**: This Application has 2 route
+   ```bash
+   / # this will show a hello world page
+   ```
+      ```bash
+   /api # this will response a json
+   ```
+
+2. **Default Port**: By Default this application will run on port 3000
+
+
+
