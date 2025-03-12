@@ -11,7 +11,7 @@
 npm install 
 
 # Testing The Applications
-npm check
+npm run check
 
 # For Run the application
 npm start
