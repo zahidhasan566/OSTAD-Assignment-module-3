@@ -44,15 +44,17 @@ stage('Run Tests') {
         echo 'Running tests and generating JUnit report...'
         sshagent(['remote-ssh-key']) {
             sh """
-                ssh -o StrictHostKeyChecking=no ubuntu@${REMOTE_HOST} '
-                    export PATH=\$PATH:/home/ubuntu/.nvm/versions/node/v18.17.1/bin &&
-                    cd ${PROJECT_DIR} &&
+                ssh -o StrictHostKeyChecking=no ubuntu@13.239.134.104 '
+                    export PATH=\$PATH:/home/ubuntu/.nvm/versions/node/v18.17.1/bin:/home/ubuntu/OSTAD-Assignment-module-3/node_modules/.bin &&
+                    cd /home/ubuntu/OSTAD-Assignment-module-3 &&
+                    npm install &&
                     npm test
                 '
             """
         }
     }
 }
+
 
         stage('Restart with PM2') {
             steps {
