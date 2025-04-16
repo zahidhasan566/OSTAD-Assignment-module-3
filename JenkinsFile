@@ -38,7 +38,11 @@ stage('Install Dependencies') {
         }
     }
 }
-
+stage('Checkout') {
+    steps {
+        git url: 'https://github.com/zahidhasan566/OSTAD-Assignment-module-3.git', branch: 'main'
+    }
+}
 stage('Run Tests') {
     steps {
         echo 'Running tests and generating JUnit report...'
