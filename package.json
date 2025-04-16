@@ -1,7 +1,6 @@
 {
   "name": "node-express-app",
   "version": "1.0.0",
-
   "scripts": {
     "start": "node src/server.js",
     "check": "mocha test/**/*.test.js",
@@ -13,7 +12,20 @@
   "devDependencies": {
     "chai": "^4.5.0",
     "chai-http": "^4.4.0",
+    "jest-junit": "^16.0.0",
     "mocha": "^10.3.0",
     "supertest": "^6.3.4"
+  },
+  "jest": {
+    "reporters": [
+      "default",
+      [
+        "jest-junit",
+        {
+          "outputDirectory": "test-reports",
+          "outputName": "junit.xml"
+        }
+      ]
+    ]
   }
 }
