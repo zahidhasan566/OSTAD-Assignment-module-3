@@ -43,12 +43,12 @@ stage('Checkout') {
         git url: 'https://github.com/zahidhasan566/OSTAD-Assignment-module-3.git', branch: 'main'
     }
 }
+
 stage('Run Tests') {
     steps {
         echo 'Running tests and generating JUnit report...'
         sh '''
           export PATH=$PATH:/home/ubuntu/.nvm/versions/node/v18.17.1/bin
-          cd /home/ubuntu/OSTAD-Assignment-module-3
           npm install
           mkdir -p test-reports
           npm test
@@ -56,7 +56,6 @@ stage('Run Tests') {
         junit 'test-reports/junit.xml'
     }
 }
-
 
         stage('Restart with PM2') {
             steps {
