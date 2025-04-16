@@ -43,9 +43,6 @@ stage('Install Dependencies') {
             steps {
                 sshagent(['remote-ssh-key']) {
                     sh """
-                        # Execute tests on the designated test/prod server
-                        ssh -o StrictHostKeyChecking=no ${TEST_USER}@${TEST_HOST} '
-                            cd ${TEST_DIR} || { echo "Directory missing!"; exit 1; }
 
                             # Install dependencies if needed
                             if [ ! -d "node_modules" ]; then
