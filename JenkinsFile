@@ -2,65 +2,52 @@ pipeline {
     agent any
 
     environment {
+        // Local paths (for Jenkins node)
+        PATH = "/usr/bin:/usr/local/bin:${env.PATH}"
+
+        // Remote server config
         REMOTE_USER = 'ubuntu'
         REMOTE_HOST = '13.239.134.104'
         PROJECT_DIR = '/home/ubuntu/OSTAD-Assignment-module-3'
-        NODE_PATH = '/home/ubuntu/.nvm/versions/node/v18.17.1/bin/npm'
+
+        // Slack config
         SLACK_CHANNEL = '#cicdnode'
         SLACK_BOT_TOKEN = credentials('slack-token')
     }
 
     stages {
-        stage('Pull Latest Code') {
+        stage('Checkout Code') {
             steps {
-                echo 'Updating code on production server...'
-                sshagent(['remote-ssh-key']) {
-                    sh """
-                        ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} '
-                            cd ${PROJECT_DIR} &&
-                            git pull origin main
-                        '
-                    """
-                }
+                git url: 'https://github.com/zahidhasan566/OSTAD-Assignment-module-3.git',
+                     branch: 'main'
             }
         }
 
-stage('Install Dependencies') {
-    steps {
-        echo 'Running npm install...'
-        sshagent(['remote-ssh-key']) {
-            sh """
-                ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} '
-                    cd ${PROJECT_DIR} &&
-                    npm install
-                '
-            """
-        }
-    }
-}
-        stage('Checkout') {
-            steps {
-                git url: 'https://github.com/zahidhasan566/OSTAD-Assignment-module-3.git', branch: 'main'
-            }
-        }
-        stage('Run Tests') {
+        stage('Run Local Tests') {
             steps {
                 sh '''
+                    echo "=== Local Environment ==="
+                    echo "Node: $(node -v)"
+                    echo "npm: $(npm -v)"
+
                     mkdir -p test-reports
-                    npm install
+                    npm ci
                     npm test
                 '''
                 junit 'test-reports/junit.xml'
             }
         }
 
-        stage('Restart with PM2') {
+        stage('Deploy to Production') {
             steps {
-                echo 'Restarting PM2 process...'
                 sshagent(['remote-ssh-key']) {
                     sh """
+                        echo "=== Deploying to ${REMOTE_HOST} ==="
                         ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} '
-                            pm2 reload server || pm2 start src/server.js --name server &&
+                            cd ${PROJECT_DIR} || exit 1
+                            git pull origin main
+                            npm ci --only=production
+                            pm2 reload server || pm2 start src/server.js --name server
                             pm2 save
                         '
                     """
@@ -70,30 +57,23 @@ stage('Install Dependencies') {
     }
 
     post {
-        success {
-            echo 'Sending Slack success notification...'
-             sh """
-                curl -X POST https://slack.com/api/chat.postMessage \
-                -H "Authorization: Bearer ${SLACK_BOT_TOKEN}" \
-                -H "Content-type: application/json; charset=utf-8" \
-                --data '{
-                  "channel": "#cicdnode",
-                  "text": "✅ Deployment succeeded on ${env.JOB_NAME} #${env.BUILD_NUMBER}"
-                }'
-              """
+        always {
+            echo "Cleaning up workspace..."
+            cleanWs()
         }
-
+        success {
+            slackSend(
+                channel: SLACK_CHANNEL,
+                message: "✅ Deployment succeeded - ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                color: 'good'
+            )
+        }
         failure {
-            echo 'Sending Slack failure notification...'
-             sh """
-                curl -X POST https://slack.com/api/chat.postMessage \
-                -H "Authorization: Bearer ${SLACK_BOT_TOKEN}" \
-                -H "Content-type: application/json; charset=utf-8" \
-                --data '{
-                  "channel": "#cicdnode",
-                  "text": "❌ Deployment failed on  ${env.JOB_NAME} #${env.BUILD_NUMBER}"
-                }'
-              """
+            slackSend(
+                channel: SLACK_CHANNEL,
+                message: "❌ Deployment failed - ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                color: 'danger'
+            )
         }
     }
 }
