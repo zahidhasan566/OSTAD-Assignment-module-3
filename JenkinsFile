@@ -56,9 +56,6 @@ stage('Install Dependencies') {
                             mocha --reporter mocha-junit-reporter \
                                   --reporter-options mochaFile=test-reports/junit.xml
                         '
-
-                        # Copy test results back to Jenkins
-                        scp ${TEST_USER}@${TEST_HOST}:${TEST_DIR}/test-reports/junit.xml ./
                     """
                 }
                 junit 'junit.xml'
