@@ -2,6 +2,18 @@ pipeline {
     agent any
 
     environment {
+    sh '''
+      echo "Jenkins Environment Variables"
+      printenv
+      echo "Current PATH: $PATH"
+      echo "Which npm: $(which npm)"
+      echo "npm Version: $(npm -v)"
+      export PATH=$PATH:/usr/bin
+      mkdir -p test-reports
+      /usr/bin/npm install
+      /usr/bin/npm test
+    '''
+
         PATH = "/usr/bin:/usr/local/bin:${env.PATH}"
         REMOTE_USER = 'ubuntu'
         REMOTE_HOST = '13.239.134.104'
