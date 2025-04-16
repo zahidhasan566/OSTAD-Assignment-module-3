@@ -1,0 +1,47 @@
+pipeline {
+    agent any
+
+    environment {
+        REMOTE_HOST = 'ubuntu@13.239.134.104'
+        REMOTE_PATH = '/home/ubuntu/OSTAD-Assignment-module-3'
+    }
+
+    stages {
+        stage('Install') {
+            steps {
+                echo 'Installing dependencies on remote host...'
+                sshagent(['remote-ssh-key']) {
+                    sh """
+                        ssh -o StrictHostKeyChecking=no $REMOTE_HOST '
+                            cd $REMOTE_PATH &&
+                            npm install
+                        '
+                    """
+                }
+            }
+        }
+
+        stage('Test') {
+            steps {
+                echo 'Running tests on remote host...'
+                sshagent(['remote-ssh-key']) {
+                    sh """
+                        ssh -o StrictHostKeyChecking=no $REMOTE_HOST '
+                            cd $REMOTE_PATH &&
+                            npm run check
+                        '
+                    """
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Build successfully'
+        }
+        failure {
+            echo 'Build failed.'
+        }
+    }
+}
