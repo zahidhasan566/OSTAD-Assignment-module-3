@@ -6,7 +6,7 @@ pipeline {
         REMOTE_HOST = '13.239.134.104'
         PROJECT_DIR = '/home/ubuntu/OSTAD-Assignment-module-3'
         NODE_PATH = '/home/ubuntu/.nvm/versions/node/v18.17.1/bin/npm'
-        SLACK_CHANNEL = '#all-cicdnodejs'
+        SLACK_CHANNEL = '#cicdnode'
     }
 
     stages {
