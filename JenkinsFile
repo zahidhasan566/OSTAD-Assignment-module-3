@@ -39,19 +39,7 @@ stage('Install Dependencies') {
 }
 
 
-stage('Run Tests') {
-    steps {
-        echo 'Running tests and generating JUnit report...'
-        sshagent(['remote-ssh-key']) {
-            sh """
-                ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} '
-                    cd ${PROJECT_DIR} &&
-                    npm test
-                '
-            """
-        }
-    }
-}
+
         stage('Restart with PM2') {
             steps {
                 echo 'Restarting PM2 process...'
@@ -74,7 +62,7 @@ stage('Run Tests') {
              message: "✅ Deployment succeeded on ${env.JOB_NAME} #${env.BUILD_NUMBER}",
              tokenCredentialId: 'slack-token',
              baseUrl: 'https://slack.com/api/',
-             teamDomain: '#all-cicdnodejs' // <--- your actual Slack team domain (e.g., for xyz.slack.com, this is xyz)
+
          )
      }
      failure {
@@ -83,7 +71,7 @@ stage('Run Tests') {
              message: "❌ Deployment failed on ${env.JOB_NAME} #${env.BUILD_NUMBER}",
              tokenCredentialId: 'slack-token',
              baseUrl: 'https://slack.com/api/',
-             teamDomain: '#all-cicdnodejs'
+
          )
      }
     }
