@@ -7,6 +7,7 @@ pipeline {
         PROJECT_DIR = '/home/ubuntu/OSTAD-Assignment-module-3'
         NODE_PATH = '/home/ubuntu/.nvm/versions/node/v18.17.1/bin/npm'
         SLACK_CHANNEL = '#cicdnode'
+        SLACK_BOT_TOKEN = credentials('slack-token')
     }
 
     stages {
@@ -57,18 +58,29 @@ stage('Install Dependencies') {
 
     post {
         success {
-            slackSend(
-                channel: "${env.SLACK_CHANNEL}",
-                message: "✅ Deployment succeeded on ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-                tokenCredentialId: 'slack-token'
-            )
+            echo 'Sending Slack success notification...'
+            sh '''
+                curl -X POST https://slack.com/api/chat.postMessage \
+                -H "Authorization: Bearer ${slack-token}" \
+                -H "Content-type: application/json; charset=utf-8" \
+                --data '{
+                  "channel": "#cicdnode",
+                  "text": "✅ Deployment succeeded on ${JOB_NAME} #${BUILD_NUMBER}"
+                }'
+            '''
         }
+
         failure {
-            slackSend(
-                channel: "${env.SLACK_CHANNEL}",
-                message: "❌ Deployment failed on ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-                tokenCredentialId: 'slack-token'
-            )
+            echo 'Sending Slack failure notification...'
+            sh '''
+                curl -X POST https://slack.com/api/chat.postMessage \
+                -H "Authorization: Bearer ${slack-token}" \
+                -H "Content-type: application/json; charset=utf-8" \
+                --data '{
+                  "channel": "#cicdnode",
+                  "text": "❌ Deployment failed on ${JOB_NAME} #${BUILD_NUMBER}"
+                }'
+            '''
         }
     }
 }
