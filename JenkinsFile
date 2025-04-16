@@ -56,21 +56,19 @@ stage('Install Dependencies') {
     }
 
     post {
-     success {
-         slackSend(
-             channel: '#all-cicdnodejs',
-             message: "✅ Deployment succeeded on ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-             tokenCredentialId: 'slack-token',
-
-         )
-     }
-     failure {
-         slackSend(
-             channel: '#all-cicdnodejs',
-             message: "❌ Deployment failed on ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-             tokenCredentialId: 'slack-token',
-
-         )
-     }
+        success {
+            slackSend(
+                channel: "${env.SLACK_CHANNEL}",
+                message: "✅ Deployment succeeded on ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                tokenCredentialId: 'slack-token'
+            )
+        }
+        failure {
+            slackSend(
+                channel: "${env.SLACK_CHANNEL}",
+                message: "❌ Deployment failed on ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                tokenCredentialId: 'slack-token'
+            )
+        }
     }
 }
