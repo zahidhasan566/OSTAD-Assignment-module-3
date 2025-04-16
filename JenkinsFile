@@ -39,7 +39,19 @@ stage('Install Dependencies') {
 }
 
 
-
+stage('Run Tests') {
+    steps {
+        echo 'Running tests and generating JUnit report...'
+        sshagent(['remote-ssh-key']) {
+            sh """
+                ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} '
+                    cd ${PROJECT_DIR} &&
+                    npm test
+                '
+            """
+        }
+    }
+}
         stage('Restart with PM2') {
             steps {
                 echo 'Restarting PM2 process...'
