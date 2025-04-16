@@ -35,11 +35,11 @@ stage('Install Dependencies & Run Tests') {
                     cd ${PROJECT_DIR} &&
                     npm install
                 '
-                             sh '''#!/bin/bash
-             npm install
-             npx mocha --reporter mocha-junit-reporter --reporter-options mochaFile=test-reports/junit.xml
-             '''
-                             junit '**/test-reports/junit.xml'
+                                 sh '''
+                 npm install
+                 npx mocha --reporter mocha-junit-reporter --reporter-options mochaFile=test-reports/junit.xml
+                 '''
+                                 junit '**/test-reports/junit.xml'
 
             """
         }
