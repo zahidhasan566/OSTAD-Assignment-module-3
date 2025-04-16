@@ -5,28 +5,46 @@ pipeline {
         REMOTE_USER = 'ubuntu'
         REMOTE_HOST = '13.239.134.104'
         PROJECT_DIR = '/home/ubuntu/OSTAD-Assignment-module-3'
-        NODE_PATH = '/home/ubuntu/.nvm/versions/node/v18.17.1/bin'
+        NODE_PATH = '/home/ubuntu/.nvm/versions/node/v18.17.1/bin/npm'
     }
 
     stages {
-        stage('Remote Install') {
+        stage('Pull Latest Code') {
             steps {
+                echo 'Updating code on production server...'
                 sshagent(['remote-ssh-key']) {
                     sh """
                         ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} '
-                            cd ${PROJECT_DIR} && ${NODE_PATH}/npm install
+                            cd ${PROJECT_DIR} &&
+                            git pull origin main
                         '
                     """
                 }
             }
         }
 
-        stage('Remote Test') {
+        stage('Install Dependencies') {
             steps {
+                echo 'Running npm install...'
                 sshagent(['remote-ssh-key']) {
                     sh """
                         ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} '
-                            cd ${PROJECT_DIR} && ${NODE_PATH}/npm run check
+                            cd ${PROJECT_DIR} &&
+                            ${NODE_PATH} install
+                        '
+                    """
+                }
+            }
+        }
+
+        stage('Restart with PM2') {
+            steps {
+                echo 'Restarting PM2 process...'
+                sshagent(['remote-ssh-key']) {
+                    sh """
+                        ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} '
+                            pm2 reload server || pm2 start src/server.js --name server &&
+                            pm2 save
                         '
                     """
                 }
@@ -36,10 +54,10 @@ pipeline {
 
     post {
         success {
-            echo 'Pipeline succeeded!'
+            echo 'Deployment succeeded!'
         }
         failure {
-            echo 'Pipeline failed!'
+            echo 'Deployment failed!'
         }
     }
 }
