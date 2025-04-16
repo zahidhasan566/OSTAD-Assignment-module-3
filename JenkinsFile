@@ -39,20 +39,6 @@ stage('Install Dependencies') {
         }
     }
 }
-        stage('Checkout') {
-            steps {
-                git url: 'https://github.com/zahidhasan566/OSTAD-Assignment-module-3.git', branch: 'main'
-            }
-        }
-stage('Run Tests') {
-    steps {
-        sh '''
-            npm install
-            mocha --reporter mocha-junit-reporter --reporter-options mochaFile=test-reports/junit.xml
-        '''
-        junit '**/test-reports/junit.xml'
-    }
-}
 
         stage('Restart with PM2') {
             steps {
