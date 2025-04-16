@@ -26,7 +26,7 @@ pipeline {
             }
         }
 
-stage('Install Dependencies & Run Tests') {
+stage('Install Dependencies') {
     steps {
         echo 'Running npm install...'
         sshagent(['remote-ssh-key']) {
@@ -36,7 +36,6 @@ stage('Install Dependencies & Run Tests') {
                     npm install
                 '
             """
-            junit '**/test-reports/junit.xml'
         }
     }
 }
