@@ -46,11 +46,15 @@ stage('Install Dependencies') {
         }
 stage('Run Tests') {
     steps {
-        sh '''
-            npm install
-            npm test
-        '''
-        junit '**/test-reports/junit.xml'
+            echo 'Running testl...'
+            sshagent(['remote-ssh-key']) {
+                sh """
+                 npm install
+                  npm test
+                """
+                 junit '**/test-reports/junit.xml'
+            }
+
     }
 }
 
