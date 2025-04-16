@@ -59,7 +59,7 @@ stage('Install Dependencies') {
     post {
         success {
             echo 'Sending Slack success notification...'
-            sh '''
+             sh """
                 curl -X POST https://slack.com/api/chat.postMessage \
                 -H "Authorization: Bearer ${SLACK_BOT_TOKEN}" \
                 -H "Content-type: application/json; charset=utf-8" \
@@ -72,7 +72,7 @@ stage('Install Dependencies') {
 
         failure {
             echo 'Sending Slack failure notification...'
-            sh '''
+             sh """
                 curl -X POST https://slack.com/api/chat.postMessage \
                 -H "Authorization: Bearer ${SLACK_BOT_TOKEN}" \
                 -H "Content-type: application/json; charset=utf-8" \
