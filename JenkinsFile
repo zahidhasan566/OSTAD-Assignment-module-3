@@ -67,7 +67,7 @@ stage('Install Dependencies') {
                   "channel": "#cicdnode",
                   "text": "✅ Deployment succeeded on ${env.JOB_NAME} #${env.BUILD_NUMBER}"
                 }'
-            '''
+              """
         }
 
         failure {
@@ -80,7 +80,7 @@ stage('Install Dependencies') {
                   "channel": "#cicdnode",
                   "text": "❌ Deployment failed on  ${env.JOB_NAME} #${env.BUILD_NUMBER}"
                 }'
-            '''
+              """
         }
     }
 }
