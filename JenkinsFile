@@ -50,6 +50,7 @@ stage('Run Tests') {
           export PATH=$PATH:/home/ubuntu/.nvm/versions/node/v18.17.1/bin
           cd /home/ubuntu/OSTAD-Assignment-module-3
           npm install
+          mkdir -p test-reports
           npm test
         '''
         junit 'test-reports/junit.xml'
