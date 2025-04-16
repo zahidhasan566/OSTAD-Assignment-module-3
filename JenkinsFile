@@ -65,7 +65,7 @@ stage('Install Dependencies') {
                 -H "Content-type: application/json; charset=utf-8" \
                 --data '{
                   "channel": "#cicdnode",
-                  "text": "✅ Deployment succeeded on ${REMOTE_USER} #${BUILD_NUMBER}"
+                  "text": "✅ Deployment succeeded on ${env.JOB_NAME} #${env.BUILD_NUMBER}"
                 }'
             '''
         }
@@ -78,7 +78,7 @@ stage('Install Dependencies') {
                 -H "Content-type: application/json; charset=utf-8" \
                 --data '{
                   "channel": "#cicdnode",
-                  "text": "❌ Deployment failed on ${REMOTE_USER} #${BUILD_NUMBER}"
+                  "text": "❌ Deployment failed on  ${env.JOB_NAME} #${env.BUILD_NUMBER}"
                 }'
             '''
         }
