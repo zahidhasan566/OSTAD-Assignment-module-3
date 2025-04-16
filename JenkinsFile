@@ -34,9 +34,9 @@ stage('Install Dependencies & Run Tests') {
                 ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} '
                     cd ${PROJECT_DIR} &&
                     npm install
-                    junit '**/test-reports/junit.xml'
                 '
             """
+            junit '**/test-reports/junit.xml'
         }
     }
 }
