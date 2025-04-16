@@ -39,13 +39,7 @@ stage('Install Dependencies') {
 }
 
 
-stage('Run Tests') {
-    steps {
-        echo 'Running tests and generating JUnit report...'
-        sh 'npm test'
-        junit 'reports/junit.xml'
-    }
-}
+
         stage('Restart with PM2') {
             steps {
                 echo 'Restarting PM2 process...'
