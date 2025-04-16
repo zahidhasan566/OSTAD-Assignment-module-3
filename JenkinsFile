@@ -47,9 +47,9 @@ stage('Install Dependencies') {
         stage('Run Tests') {
             steps {
                 sh '''
-                    mkdir -p test-reports
-                    npm install
-                    npm test
+                  mkdir -p test-reports
+                  /usr/bin/npm install
+                  /usr/bin/npm test
                 '''
                 junit 'test-reports/junit.xml'
             }
