@@ -5,11 +5,17 @@ pipeline {
         REMOTE_USER = 'ubuntu'
         REMOTE_HOST = '13.239.134.104'
         PROJECT_DIR = '/home/ubuntu/OSTAD-Assignment-module-3'
-        NODE_PATH = '/home/ubuntu/.nvm/versions/node/v18.17.1/bin/npm'
+        SLACK_CHANNEL = '#deployments'
     }
 
     stages {
-        stage('Pull Latest Code') {
+        stage('Checkout Code') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Pull Latest Code on Production') {
             steps {
                 echo 'Updating code on production server...'
                 sshagent(['remote-ssh-key']) {
@@ -23,30 +29,42 @@ pipeline {
             }
         }
 
-stage('Install Dependencies') {
-    steps {
-        echo 'Running npm install...'
-        sshagent(['remote-ssh-key']) {
-            sh """
-                ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} '
-                    cd ${PROJECT_DIR} &&
-                    npm install
-                '
-            """
-        }
-    }
-}
-
-
-
-        stage('Restart with PM2') {
+        stage('Install Dependencies') {
             steps {
-                echo 'Restarting PM2 process...'
+                echo 'Running npm install on production server...'
                 sshagent(['remote-ssh-key']) {
                     sh """
                         ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} '
-                            pm2 reload server || pm2 start src/server.js --name server &&
-                            pm2 save
+                            cd ${PROJECT_DIR} &&
+                            npm install
+                        '
+                    """
+                }
+            }
+        }
+
+        stage('Run Tests') {
+            steps {
+                echo 'Running tests and generating JUnit report...'
+                sshagent(['remote-ssh-key']) {
+                    sh """
+                        ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} '
+                            cd ${PROJECT_DIR} &&
+                            npm test
+                        '
+                    """
+                }
+            }
+        }
+
+        stage('Restart with PM2') {
+            steps {
+                echo 'Restarting server with PM2...'
+                sshagent(['remote-ssh-key']) {
+                    sh """
+                        ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} '
+                            cd ${PROJECT_DIR} &&
+                            pm2 restart src/server.js || pm2 start src/server.js
                         '
                     """
                 }
@@ -57,9 +75,20 @@ stage('Install Dependencies') {
     post {
         success {
             echo 'Deployment succeeded!'
+            slackSend(channel: "${SLACK_CHANNEL}", message: "Build Succeeded*: `${env.JOB_NAME}` [#${env.BUILD_NUMBER}] (<${env.BUILD_URL}|View>)")
         }
+
         failure {
             echo 'Deployment failed!'
+            slackSend(channel: "${SLACK_CHANNEL}", message: " *Build Failed*: `${env.JOB_NAME}` [#${env.BUILD_NUMBER}] (<${env.BUILD_URL}|View>)")
+
+            // Optional: Discord Notification
+            // sh '''
+            // curl -H "Content-Type: application/json" \
+            //      -X POST \
+            //      -d '{"content": " Build Failed: '"${JOB_NAME}"' #'"${BUILD_NUMBER}"'"}' \
+            //      https://discord.com/api/webhooks/YOUR_WEBHOOK_ID
+            // '''
         }
     }
 }
