@@ -23,20 +23,20 @@ pipeline {
             }
         }
 
-        stage('Install Dependencies') {
-            steps {
-                echo 'Running npm install...'
-                sshagent(['remote-ssh-key']) {
-                    sh """
-                        ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} '
-                            cd ${PROJECT_DIR} &&
-                            source ~/.nvm/nvm.sh &&
-                            npm install
-                        '
-                    """
-                }
-            }
+stage('Install Dependencies') {
+    steps {
+        echo 'Running npm install...'
+        sshagent(['remote-ssh-key']) {
+            sh """
+                ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} '
+                    cd ${PROJECT_DIR} &&
+                    npm install
+                '
+            """
         }
+    }
+}
+
 
 
         stage('Restart with PM2') {
