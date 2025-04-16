@@ -44,7 +44,7 @@ stage('Run Tests') {
         echo 'Running tests and generating JUnit report...'
         sh '''
             export PATH=$PATH:/home/ubuntu/.nvm/versions/node/v18.17.1/bin
-            npm test
+            sudo npm test
         '''
         junit 'reports/junit.xml'
     }
