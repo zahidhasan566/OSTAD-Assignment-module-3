@@ -42,16 +42,13 @@ stage('Install Dependencies') {
 stage('Run Tests') {
     steps {
         echo 'Running tests and generating JUnit report...'
-        sshagent(['remote-ssh-key']) {
-            sh """
-                ssh -o StrictHostKeyChecking=no ubuntu@13.239.134.104 '
-                    export PATH=\$PATH:/home/ubuntu/.nvm/versions/node/v18.17.1/bin:/home/ubuntu/OSTAD-Assignment-module-3/node_modules/.bin &&
-                    cd /home/ubuntu/OSTAD-Assignment-module-3 &&
-                    npm install &&
-                    npm test
-                '
-            """
-        }
+        sh '''
+          export PATH=$PATH:/home/ubuntu/.nvm/versions/node/v18.17.1/bin
+          cd /home/ubuntu/OSTAD-Assignment-module-3
+          npm install
+          npm test
+        '''
+        junit 'test-reports/junit.xml'
     }
 }
 
