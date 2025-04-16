@@ -39,44 +39,20 @@ stage('Install Dependencies') {
         }
     }
 }
-stages {
-    stage('Checkout') {
-        steps {
-            git url: 'https://github.com/zahidhasan566/OSTAD-Assignment-module-3.git', branch: 'main'
-        }
-    }
-
-    stage('Install Dependencies') {
-        steps {
-            sh 'npm install'
-        }
-    }
-
-    stage('Run Tests') {
-        steps {
-            sh 'npm test'
-            junit allowEmptyResults: true, testResults: '**/test-reports/junit.xml'
-        }
-    }
-
-    stage('Deploy to Remote') {
-        steps {
-            sshagent(['remote-ssh-key']) {
-                sh """
-                    ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} '
-                        cd ${PROJECT_DIR} &&
-                        git pull origin main &&
-                        npm install &&
-                        pm2 reload server || pm2 start src/server.js --name server &&
-                        pm2 save
-                    '
-                """
+        stage('Checkout') {
+            steps {
+                git url: 'https://github.com/zahidhasan566/OSTAD-Assignment-module-3.git', branch: 'main'
             }
         }
+stage('Run Tests') {
+    steps {
+        sh '''
+            npm install
+            npm test
+        '''
+        junit '**/test-reports/junit.xml'
     }
 }
-
-
 
         stage('Restart with PM2') {
             steps {
