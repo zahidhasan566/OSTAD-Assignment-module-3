@@ -26,7 +26,7 @@ pipeline {
             }
         }
 
-stage('Install Dependencies') {
+stage('Install Dependencies & Run Tests') {
     steps {
         echo 'Running npm install...'
         sshagent(['remote-ssh-key']) {
@@ -35,24 +35,12 @@ stage('Install Dependencies') {
                     cd ${PROJECT_DIR} &&
                     npm install
                 '
+                sh 'npx mocha --reporter mocha-junit-reporter --reporter-options mochaFile=test-reports/junit.xml'
+                                junit '**/test-reports/junit.xml'
             """
         }
     }
 }
-tools {
-    nodejs 'nodejs-18'
-}
-stages {
-    stage('Run Tests') {
-        steps {
-            sh 'npm install'
-            sh 'npx mocha --reporter mocha-junit-reporter --reporter-options mochaFile=test-reports/junit.xml'
-            junit '**/test-reports/junit.xml'
-        }
-    }
-}
-
-
         stage('Restart with PM2') {
             steps {
                 echo 'Restarting PM2 process...'
