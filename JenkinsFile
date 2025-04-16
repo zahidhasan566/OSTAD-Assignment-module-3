@@ -48,7 +48,7 @@ stage('Run Tests') {
     steps {
         sh '''
             npm install
-            npm test
+            mocha --reporter mocha-junit-reporter --reporter-options mochaFile=test-reports/junit.xml
         '''
         junit '**/test-reports/junit.xml'
     }
