@@ -61,7 +61,6 @@ stage('Install Dependencies') {
              channel: '#all-cicdnodejs',
              message: "✅ Deployment succeeded on ${env.JOB_NAME} #${env.BUILD_NUMBER}",
              tokenCredentialId: 'slack-token',
-             baseUrl: 'https://slack.com/api/',
 
          )
      }
@@ -70,7 +69,6 @@ stage('Install Dependencies') {
              channel: '#all-cicdnodejs',
              message: "❌ Deployment failed on ${env.JOB_NAME} #${env.BUILD_NUMBER}",
              tokenCredentialId: 'slack-token',
-             baseUrl: 'https://slack.com/api/',
 
          )
      }
