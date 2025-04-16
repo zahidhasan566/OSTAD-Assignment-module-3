@@ -39,28 +39,19 @@ stage('Install Dependencies') {
         }
     }
 }
-      stage('Run Tests') {
-            steps {
-                sshagent(['remote-ssh-key']) {
-                    sh """
-
-                            # Install dependencies if needed
-                            if [ ! -d "node_modules" ]; then
-                                npm install
-                            fi
-
-                            # Create test-reports directory
-                            mkdir -p test-reports
-
-                            # Run tests with JUnit reporter
-                            mocha --reporter mocha-junit-reporter \
-                                  --reporter-options mochaFile=test-reports/junit.xml
-                        '
-                    """
-                }
-                junit 'junit.xml'
-            }
+tools {
+    nodejs 'nodejs-18'
+}
+stages {
+    stage('Run Tests') {
+        steps {
+            sh 'npm install'
+            sh 'npx mocha --reporter mocha-junit-reporter --reporter-options mochaFile=test-reports/junit.xml'
+            junit '**/test-reports/junit.xml'
         }
+    }
+}
+
 
         stage('Restart with PM2') {
             steps {
