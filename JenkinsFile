@@ -63,10 +63,22 @@ stage('Run Tests') {
 
     post {
      success {
-         slackSend(channel: '#all-cicdnodejs', message: "Build Succeeded", tokenCredentialId: 'slack-token')
+         slackSend(
+             channel: '#all-cicdnodejs',
+             message: "✅ Deployment succeeded on ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+             tokenCredentialId: 'slack-token',
+             baseUrl: 'https://slack.com/api/',
+             teamDomain: '#all-cicdnodejs' // <--- your actual Slack team domain (e.g., for xyz.slack.com, this is xyz)
+         )
      }
      failure {
-         slackSend(channel: '#all-cicdnodejs', message: "Build Failed", tokenCredentialId: 'slack-token')
+         slackSend(
+             channel: '#all-cicdnodejs',
+             message: "❌ Deployment failed on ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+             tokenCredentialId: 'slack-token',
+             baseUrl: 'https://slack.com/api/',
+             teamDomain: '#all-cicdnodejs'
+         )
      }
     }
 }
