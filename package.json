@@ -5,7 +5,7 @@
     "start": "node src/server.js",
     "check": "mocha test/**/*.test.js",
     "dev": "node src/server.js",
-    "test": "jest --ci --reporters=default --reporters=jest-junit"
+    "test": "mocha --reporter mocha-junit-reporter"
   },
   "dependencies": {
     "express": "^4.18.3"
@@ -20,6 +20,9 @@
   "jest-junit": {
     "outputDirectory": "./",
     "outputName": "junit.xml"
+  },
+  "mocha-junit-reporter": {
+    "mochaFile": "junit.xml"
   },
   "mocha": {
     "reporterOptions": {
