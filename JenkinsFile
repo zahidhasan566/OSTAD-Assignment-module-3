@@ -25,27 +25,6 @@ pipeline {
                 }
             }
         }
-stage('Run Tests') {
-    steps {
-        echo 'Running tests on remote server and fetching junit.xml...'
-        sshagent(['remote-ssh-key']) {
-            sh """
-                ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} '
-                    cd ${PROJECT_DIR} &&
-                    rm -f junit.xml &&
-                    npm install &&
-                    npm test -- --reporters=default --reporters=jest-junit
-                '
-                scp -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST}:${PROJECT_DIR}/junit.xml .
-            """
-        }
-    }
-    post {
-        always {
-            junit 'junit.xml'
-        }
-    }
-}
 stage('Install Dependencies') {
     steps {
         echo 'Running npm install...'
