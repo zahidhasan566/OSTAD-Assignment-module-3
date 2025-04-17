@@ -17,6 +17,10 @@
     "mocha": "^10.3.0",
     "supertest": "^6.3.4"
   },
+  "jest-junit": {
+    "outputDirectory": ".",
+    "outputName": "junit.xml"
+  },
   "mocha": {
     "reporterOptions": {
       "mochaFile": "./test-reports/junit.xml"

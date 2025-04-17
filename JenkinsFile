@@ -25,7 +25,23 @@ pipeline {
                 }
             }
         }
-
+stage('Run Tests') {
+    steps {
+        sshagent(['remote-ssh-key']) {
+            sh """
+                ssh ${REMOTE_USER}@${REMOTE_HOST} '
+                    cd ${PROJECT_DIR} &&
+                    npm test -- --reporters=jest-junit
+                '
+            """
+        }
+    }
+    post {
+        always {
+            junit 'junit.xml'
+        }
+    }
+}
 stage('Install Dependencies') {
     steps {
         echo 'Running npm install...'
